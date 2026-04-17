@@ -993,12 +993,11 @@ async function validateAndSaveKey() {
   setKeyMsg('info', 'Google API에 연결을 확인하는 중...');
 
   try {
-    // Tiny test call to validate the key
-    const testResp = await fetch(ENDPOINT, {
+    // Tiny test call to validate the key (URL param works for both AIza... and AQ. key formats)
+    const testResp = await fetch(ENDPOINT + '?key=' + encodeURIComponent(k), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': k,
       },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: 'hi' }] }],
@@ -1127,11 +1126,10 @@ async function analyze() {
       },
     };
 
-    const response = await fetch(ENDPOINT, {
+    const response = await fetch(ENDPOINT + '?key=' + encodeURIComponent(currentKey), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': currentKey,
       },
       body: JSON.stringify(requestBody),
     });
