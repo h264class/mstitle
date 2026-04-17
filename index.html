@@ -820,7 +820,7 @@
         <div class="step">
           <div class="step-num">02</div>
           <div class="step-text">
-            <strong>"Create API key"</strong> 버튼을 눌러 키를 발급받습니다. <code>AIzaSy...</code> 로 시작하는 긴 문자열이 생성됩니다.
+            <strong>"Create API key"</strong> 버튼을 눌러 키를 발급받습니다. <code>AIzaSy...</code> 또는 <code>AQ....</code> 로 시작하는 긴 문자열이 생성됩니다.
           </div>
         </div>
         <div class="step">
@@ -840,7 +840,7 @@
           type="password"
           class="key-input"
           id="keyInput"
-          placeholder="AIzaSy로 시작하는 API 키를 붙여넣으세요"
+          placeholder="AIzaSy 또는 AQ.로 시작하는 API 키를 붙여넣으세요"
           autocomplete="off"
           spellcheck="false">
         <button class="save-btn" id="saveKeyBtn">등록</button>
@@ -922,10 +922,16 @@ let currentKey = null;
 // ============================================================
 //  KEY MANAGEMENT
 // ============================================================
+function isValidKeyFormat(k) {
+  if (!k || typeof k !== 'string') return false;
+  // Accept both legacy (AIzaSy...) and new (AQ.Ab...) Gemini API key formats
+  return k.startsWith('AIza') || k.startsWith('AQ.');
+}
+
 function loadKey() {
   try {
     const k = localStorage.getItem(STORAGE_KEY);
-    if (k && k.startsWith('AIza')) {
+    if (isValidKeyFormat(k)) {
       currentKey = k;
       onKeyConfigured();
       return true;
@@ -975,9 +981,9 @@ async function validateAndSaveKey() {
     setKeyMsg('error', 'API 키를 입력해주세요.');
     return;
   }
-  if (!k.startsWith('AIza')) {
+  if (!isValidKeyFormat(k)) {
     keyInput.classList.add('error');
-    setKeyMsg('error', '올바른 Gemini API 키 형식이 아닙니다. (AIza... 로 시작해야 함)');
+    setKeyMsg('error', '올바른 Gemini API 키 형식이 아닙니다. (AIza... 또는 AQ.... 로 시작)');
     return;
   }
 
